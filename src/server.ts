@@ -8,6 +8,7 @@ import { Server } from 'node:http';
 import { errorHandler } from './lib/error-handler';
 import { router } from './modules';
 import { connectDB, disconnectDB } from './modules/database';
+import { onboardingMailService } from './modules/email-registration';
 
 let server: Server = null;
 
@@ -24,10 +25,14 @@ async function start() {
   server = app.listen(Number.parseInt(process.env.PORT), () =>
     console.log(`Server listening on port:${process.env.PORT}`)
   );
+
+  await onboardingMailService.init();
 }
 
 async function stop() {
   console.log('Stopping server.');
+
+  onboardingMailService.stop();
   if (server) {
     server.close((err) => {
       if (err) {

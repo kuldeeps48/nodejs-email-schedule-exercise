@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm';
 import { DuplicateError } from '../../../lib/errors';
 import EmailRegistration from '../model/email-registration';
+import onboardingMailService from './onboarding-mail-service';
 
 export async function registerNewEmail(email: string): Promise<void> {
   const isDuplicate = await isEmailRegistered(email);
@@ -14,7 +15,8 @@ export async function registerNewEmail(email: string): Promise<void> {
   newEmailRegistration.sentHelloMail = false;
   await getRepository(EmailRegistration).save(newEmailRegistration);
 
-  //TODO: Queue 'Hello' mail
+  // Queue 'Hello' mail
+  await onboardingMailService.onboard(email);
 }
 
 async function isEmailRegistered(email: string): Promise<boolean> {
