@@ -1,13 +1,14 @@
 import { createTransport, createTestAccount, getTestMessageUrl } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
+import schedule, { Job } from 'node-schedule';
 import { getRepository } from 'typeorm';
 import EmailRegistration from '../model/email-registration';
 
 class OnboardingMailService {
   private emailQueue: string[] = [];
   private mailTransporter: Mail;
-  private sendMailRef: NodeJS.Timer;
-  private sendMailInterval: number = 10_000; // 10sec
+  private job: Job;
+  private sendMailInterval: number = 10_000; // Every 10sec
 
   public async init() {
     await this.initializeMailTransport();
@@ -23,11 +24,17 @@ class OnboardingMailService {
       this.emailQueue = emails.map((e) => e.email);
     }
 
-    this.sendMailRef = setInterval(() => this.sendOnboardingMail(), this.sendMailInterval);
+    this.job = schedule.scheduleJob(
+      'Send onboarding mail',
+      {
+        second: 10,
+      },
+      () => this.sendOnboardingMail()
+    );
   }
 
   public stop() {
-    clearInterval(this.sendMailRef);
+    this.job?.cancel();
   }
 
   public async onboard(email: string) {
