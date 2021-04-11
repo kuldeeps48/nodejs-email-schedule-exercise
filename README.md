@@ -16,3 +16,10 @@ An express server which takes emails and sends them "Hello" mail using a schedul
   "email": "kuldeeps48@gmail.com"
   }
 - Your email will be registered if it's not already registered and a preview link will be logged by server to view 'hello' mail sent to user when using ethereal mail.
+
+### Uses
+
+- express
+- typeorm
+- nodemailer
+- node-schedule
