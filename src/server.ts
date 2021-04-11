@@ -7,12 +7,14 @@ import helmet from 'helmet';
 import { Server } from 'node:http';
 import { errorHandler } from './lib/error-handler';
 import { router } from './modules';
+import { connectDB, disconnectDB } from './modules/database';
 
 let server: Server = null;
 
 async function start() {
-  const app = express();
+  await connectDB();
 
+  const app = express();
   app.use(helmet());
   app.use(cors());
   app.use(json());
@@ -33,6 +35,8 @@ async function stop() {
       }
     });
   }
+
+  await disconnectDB();
 }
 
 start();

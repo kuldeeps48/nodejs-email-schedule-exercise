@@ -1,8 +1,9 @@
 import express from 'express';
-import { emailRegistrationRouter } from './email-registration';
+import { emailRegistrationRouter, EmailRegistration } from './email-registration';
 
 const router = express.Router();
-
 router.use('/email', emailRegistrationRouter);
 
-export { router };
+const models = [EmailRegistration];
+
+export { router, models };
