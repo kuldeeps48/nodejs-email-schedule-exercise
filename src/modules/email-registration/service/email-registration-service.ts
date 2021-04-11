@@ -14,6 +14,7 @@ export async function registerNewEmail(email: string): Promise<void> {
   newEmailRegistration.email = email;
   newEmailRegistration.sentHelloMail = false;
   await getRepository(EmailRegistration).save(newEmailRegistration);
+  console.log(`Registered new email:${email}`);
 
   // Queue 'Hello' mail
   await onboardingMailService.onboard(email);

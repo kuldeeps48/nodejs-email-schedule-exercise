@@ -31,6 +31,7 @@ class OnboardingMailService {
   }
 
   public async onboard(email: string) {
+    console.log(`Queued ${email} for onboarding mail.`);
     this.emailQueue.push(email);
   }
 
@@ -41,6 +42,32 @@ class OnboardingMailService {
         this.emailQueue = [];
 
         await Promise.allSettled(emails.map((e) => this.sendMailAndUpdateDB(e)));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  private async sendMailAndUpdateDB(email: string): Promise<void> {
+    try {
+      const info = await this.mailTransporter.sendMail({
+        from: '"Node Exercise" <exercise@example.com>',
+        to: email,
+        subject: 'Onboard',
+        text: 'Hello. Your email has been registered.',
+        html: '<b>Hello. Your email has been registered.</b>',
+      });
+
+      await getRepository(EmailRegistration).update(
+        {
+          email,
+        },
+        { sentHelloMail: true }
+      );
+
+      // Log preview URL if using ethereal mail
+      if (process.env.USE_ETHEREAL_MAIL === 'true') {
+        console.log(`Email preview URL: ${getTestMessageUrl(info)}`);
       }
     } catch (err) {
       console.error(err);
@@ -69,32 +96,6 @@ class OnboardingMailService {
           pass: process.env.SMTP_PASSWORD,
         },
       } as any);
-    }
-  }
-
-  private async sendMailAndUpdateDB(email: string): Promise<void> {
-    try {
-      const info = await this.mailTransporter.sendMail({
-        from: '"Node Exercise" <exercise@example.com>',
-        to: email,
-        subject: 'Onboard',
-        text: 'Hello. Your email has been registered.',
-        html: '<b>Hello. Your email has been registered.</b>',
-      });
-
-      await getRepository(EmailRegistration).update(
-        {
-          email,
-        },
-        { sentHelloMail: true }
-      );
-
-      // Log preview URL if using ethereal mail
-      if (process.env.USE_ETHEREAL_MAIL === 'true') {
-        console.log(`Email preview URL: ${getTestMessageUrl(info)}`);
-      }
-    } catch (err) {
-      console.error(err);
     }
   }
 }
