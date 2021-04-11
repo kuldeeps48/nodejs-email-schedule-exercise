@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { registerNewEmail } from '../service/register-email';
+import { registerNewEmail } from '../service/email-registration-service';
 
 export async function registerEmail(req: Request, res: Response, next: NextFunction) {
   try {
