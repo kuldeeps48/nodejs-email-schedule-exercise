@@ -4,20 +4,20 @@ import EmailRegistration from '../model/email-registration';
 import onboardingMailService from './onboarding-mail-service';
 
 export async function registerNewEmail(email: string): Promise<void> {
-  const isDuplicate = await isEmailRegistered(email);
-  if (isDuplicate) {
+  const duplicateEmail = await isEmailRegistered(email);
+  if (duplicateEmail) {
     throw new DuplicateError(`Email ${email} is already registered.`);
   }
 
-  // Save in DB
+  // Register email
   const newEmailRegistration = new EmailRegistration();
   newEmailRegistration.email = email;
   newEmailRegistration.sentHelloMail = false;
   await getRepository(EmailRegistration).save(newEmailRegistration);
   console.log(`Registered new email:${email}`);
 
-  // Queue 'Hello' mail
-  await onboardingMailService.onboard(email);
+  // Send 'Hello' mail
+  onboardingMailService.onboard(email);
 }
 
 async function isEmailRegistered(email: string): Promise<boolean> {

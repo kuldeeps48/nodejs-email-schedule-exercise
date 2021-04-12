@@ -14,6 +14,7 @@ let server: Server = null;
 
 async function start() {
   await connectDB();
+  await onboardingMailService.init();
 
   const app = express();
   app.use(helmet());
@@ -25,23 +26,19 @@ async function start() {
   server = app.listen(Number.parseInt(process.env.PORT), () =>
     console.log(`Server listening on port:${process.env.PORT}`)
   );
-
-  await onboardingMailService.init();
 }
 
 async function stop() {
   console.log('Stopping server.');
-
   onboardingMailService.stop();
-  if (server) {
-    server.close((err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
-  }
+  server?.close((err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
 
   await disconnectDB();
+  console.log('Shutdown complete.');
 }
 
 start();

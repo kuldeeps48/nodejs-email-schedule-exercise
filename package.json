@@ -4,6 +4,7 @@
   "description": "An express server which takes emails and sends them \"Hello\" mail using a scheduler.",
   "main": "src/server.js",
   "scripts": {
+    "lint": "eslint .",
     "build": "tsc",
     "start": "npm run build && node dist/server.js"
   },

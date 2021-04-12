@@ -3,7 +3,7 @@ import { models } from '../index';
 
 let connection: Connection = null;
 
-export async function connectDB() {
+export async function connectDB(): Promise<void> {
   const options = await getConnectionOptions();
   if (!connection?.isConnected) {
     connection = await createConnection({ ...options, entities: models });
@@ -12,7 +12,7 @@ export async function connectDB() {
   }
 }
 
-export async function disconnectDB() {
+export async function disconnectDB(): Promise<void> {
   if (connection?.isConnected) {
     await connection.close();
   }

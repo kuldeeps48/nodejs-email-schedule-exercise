@@ -2,7 +2,7 @@
   "env": {
     "node": true
   },
-  "extends": ["plugin:@typescript-eslint/recommended", "prettier/@typescript-eslint", "plugin:prettier/recommended"],
+  "extends": ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "rules": {
@@ -14,11 +14,13 @@
       }
     ],
     "sort-keys": "off",
-    "no-console": "error",
+    "no-console": "off",
     "no-new": "error",
     "no-unused-expressions": "error",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off",
     "sort-imports": "off",
-    "require-await": "off",
-    "no-return-await": "error",
+    "no-return-await": "error"
   }
 }

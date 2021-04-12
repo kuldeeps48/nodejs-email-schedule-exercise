@@ -8,12 +8,11 @@ class OnboardingMailService {
   private emailQueue: string[] = [];
   private mailTransporter: Mail;
   private job: Job;
-  private sendMailInterval: number = 10_000; // Every 10sec
 
   public async init() {
     await this.initializeMailTransport();
 
-    // Fetch registered emails from DB whose onboarding mail is yet to be sent incase server was shutdown. Queue them if any.
+    // Fetch registered emails from DB whose onboarding mail is yet to be sent incase server was shutdown. Queue them if found.
     const emails = await getRepository(EmailRegistration).find({
       where: {
         sentHelloMail: false,
@@ -24,6 +23,7 @@ class OnboardingMailService {
       this.emailQueue = emails.map((e) => e.email);
     }
 
+    // Schedule a job to send onboarding mail by checking every 10 seconds.
     this.job = schedule.scheduleJob(
       'Send onboarding mail',
       {
@@ -37,7 +37,13 @@ class OnboardingMailService {
     this.job?.cancel();
   }
 
-  public async onboard(email: string) {
+  /**
+   * Send onboarding 'Hello' mail to given email address.
+   *
+   * @param {string} email
+   * @memberof OnboardingMailService
+   */
+  public onboard(email: string) {
     console.log(`Queued ${email} for onboarding mail.`);
     this.emailQueue.push(email);
   }
@@ -97,7 +103,7 @@ class OnboardingMailService {
       this.mailTransporter = createTransport({
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT),
-        secure: process.env.SMTP_SECURE,
+        secure: Boolean(process.env.SMTP_SECURE),
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASSWORD,
